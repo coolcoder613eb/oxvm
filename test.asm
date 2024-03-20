@@ -1,9 +1,9 @@
 # start memory address
-.start 0x00ff
+.start 0x01020304
 
 .label loop
     # label jump
     goto loop
 
 # absolute jump
-jmp 0xff00
+jmp 0xfafbfcfd

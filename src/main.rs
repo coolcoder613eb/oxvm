@@ -17,6 +17,8 @@ fn main() {
             let mut asmb = Assembler::new();
             asmb.assemble(read_to_string(filename).expect("Failed to read file!"));
             println!("{:#?}", asmb);
+            let code = asmb.emit();
+            println!("{:#?}", code);
         }
         None => println!("No file specified"),
     }
