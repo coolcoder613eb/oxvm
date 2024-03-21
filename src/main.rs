@@ -14,9 +14,12 @@ fn main() {
     match arguments.next() {
         Some(filename) => {
             println!("Filename: {}", filename);
+            // create an assembler
             let mut asmb = Assembler::new();
+            // assemble the file
             asmb.assemble(read_to_string(filename).expect("Failed to read file!"));
             println!("{:#?}", asmb);
+            // emit the bytecode
             let code = asmb.emit();
             println!("{:#?}", code);
         }
