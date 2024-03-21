@@ -44,6 +44,7 @@ impl Assembler {
     }
     pub fn assemble(&mut self, code: String) {
         for line in code.lines() {
+            // hand off different line types to their respective functiond
             match line.trim_start().chars().next() {
                 Some(character) => match character {
                     '#' => println!("Comment: {}", line),
@@ -68,6 +69,7 @@ impl Assembler {
             Some(token) => match token {
                 ".start" => {
                     let straddr = tokens.next().expect("FATAL: No address for .start!");
+                    // parse hex address
                     let addr = u32::from_str_radix(
                         match straddr.strip_prefix("0x") {
                             Some(stripped) => stripped,
@@ -90,6 +92,7 @@ impl Assembler {
         }
     }
     fn code(&mut self, line: &str) {
+        // split on the first space
         let mut op = line.splitn(2, ' ');
         let op_type = op.next().unwrap();
         match op_type {
@@ -104,6 +107,7 @@ impl Assembler {
             }
             "jmp" => {
                 let straddr = op.next().expect("FATAL: No address for jmp!");
+                // parse hex address
                 let addr = u32::from_str_radix(
                     match straddr.strip_prefix("0x") {
                         Some(stripped) => stripped,
@@ -123,12 +127,16 @@ impl Assembler {
     }
     pub fn emit(self) -> Vec<u8> {
         let mut instructions: Vec<Vec<u8>> = vec![];
+        // goto index, label name
         let mut labels_srcs: HashMap<usize, String> = HashMap::new();
+        // label name, label index
         let mut labels_targets: HashMap<String, usize> = HashMap::new();
         for instr in self.instructions {
             match instr {
                 Instruction::Label(label_instr) => {
+                    // empty entry
                     instructions.push(vec![]);
+                    // associate it's index to the label's name in label targets
                     labels_targets.insert(label_instr.name, instructions.len());
                 }
                 Instruction::Op(op_instr) => instructions.push(vec![
@@ -139,6 +147,7 @@ impl Assembler {
                 ]),
                 Instruction::Jmp(jmp_instr) => {
                     let mut code = vec![jmp_instr.op_type as u8];
+                    // convert u32 to bytes
                     code.append(&mut jmp_instr.target.to_le_bytes().to_vec());
                     instructions.push(code);
                 }
